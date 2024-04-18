@@ -1,6 +1,14 @@
 import type { Metadata } from 'next'
+import { Montserrat } from 'next/font/google'
 import './reset.css'
 import './globals.css'
+
+const montserrat = Montserrat({
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  display: 'swap'
+})
 
 export const metadata: Metadata = {
   title: 'Weather',
@@ -14,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body>{children}</body>
+      <body className={montserrat.className}>{children}</body>
     </html>
   )
 }
