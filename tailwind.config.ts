@@ -1,17 +1,13 @@
 import type { Config } from 'tailwindcss'
-import { themes } from './src/app/_assets/themes'
+import { theme } from './src/shared/theme'
 
 let colors = {}
-Object.keys(themes.dark).forEach((color) => {
+Object.keys(theme.dark).forEach((color) => {
   colors = { ...colors, [color]: `var(--${color})` }
 })
 
 const config: Config = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}'
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     colors,
     fontFamily: {
