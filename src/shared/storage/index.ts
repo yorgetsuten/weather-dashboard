@@ -1,7 +1,15 @@
 import { StorageSchema } from './types'
 
-export function getStorageItem<T extends keyof StorageSchema>(key: T) {
-  return JSON.parse(localStorage.getItem(key)!) as StorageSchema[T]
+export function getStorageItem<T extends keyof StorageSchema>(
+  key: T
+): StorageSchema[T] | null {
+  const item = localStorage.getItem(key)
+
+  try {
+    return JSON.parse(item!) as StorageSchema[T]
+  } catch (_) {
+    return item as StorageSchema[T]
+  }
 }
 
 export function setStorageItem<T extends keyof StorageSchema>(
