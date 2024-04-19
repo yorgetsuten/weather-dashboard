@@ -1,25 +1,8 @@
-interface Theme {
-  'bg-primary': string
-  'bg-secondary': string
-  'bg-inverted-primary': string
-  'bg-inverted-secondary': string
+import { Theme, Themes } from './types'
 
-  'text-primary': string
-  'text-secondary': string
-  'text-tertiary': string
-  'text-inverted-primary': string
-  'text-inverted-secondary': string
+export type { Theme, Themes }
 
-  'accent-primary': string
-  'accent-secondary': string
-}
-
-interface Themes {
-  dark: Theme
-  light: Theme
-}
-
-export const themes: Themes = {
+export const theme: Record<Themes, Theme> = {
   dark: {
     'bg-primary': '#111015',
     'bg-secondary': '#1E1E1E',
