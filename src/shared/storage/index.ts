@@ -2,7 +2,7 @@ import { StorageSchema } from './types'
 
 export function getStorageItem<T extends keyof StorageSchema>(
   key: T
-): StorageSchema[T] | null {
+): StorageSchema[T] | null {  
   const item = localStorage.getItem(key)
 
   try {
