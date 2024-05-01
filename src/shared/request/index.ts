@@ -1,4 +1,5 @@
 import { CurrentResponse, SearchSearch } from './types'
+export type { CurrentResponse, SearchSearch }
 
 const baseUrl = 'https://api.weatherapi.com/v1'
 const key = process.env.NEXT_PUBLIC_API_KEY
@@ -19,7 +20,10 @@ export async function request<T extends keyof typeof endpoints>(
   endpoint: T,
   query: string
 ): Promise<Response<T>> {
-  return fetch(`${baseUrl}/${endpoints[endpoint]}?key=${key}&q=${query}`).then(
-    (response) => response.json()
-  )
+  const url = `${baseUrl}/${endpoints[endpoint]}?key=${key}&q=${query}`
+  const config: RequestInit = {
+    next: { revalidate: 300 }
+  }
+
+  return (await fetch(url, config)).json()
 }

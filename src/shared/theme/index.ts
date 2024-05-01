@@ -4,33 +4,33 @@ export type { Theme, Themes }
 
 export const theme: Record<Themes, Theme> = {
   dark: {
-    'bg-primary': '#111015',
-    'bg-secondary': '#1E1E1E',
-    'bg-inverted-primary': '#D8E9F9',
-    'bg-inverted-secondary': '#BBD7EC',
+    bgPrimary: '#111015',
+    bgSecondary: '#1E1E1E',
+    bgInvertedPrimary: '#D8E9F9',
+    bgInvertedSecondary: '#BBD7EC',
 
-    'text-primary': '#FDFDFD',
-    'text-secondary': '#EFEFEF',
-    'text-tertiary': '#818085',
-    'text-inverted-primary': '#0F0F11',
-    'text-inverted-secondary': '#4F5658',
+    textPrimary: '#FDFDFD',
+    textSecondary: '#EFEFEF',
+    textTertiary: '#818085',
+    textInvertedPrimary: '#0F0F11',
+    textInvertedSecondary: '#4F5658',
 
-    'accent-primary': '#2AA1FA',
-    'accent-secondary': 'BAD4EB'
+    accentPrimary: '#2AA1FA',
+    accentSecondary: 'BAD4EB'
   },
   light: {
-    'bg-primary': '#FFFFFF',
-    'bg-secondary': '#F2F2F2',
-    'bg-inverted-primary': '#111015',
-    'bg-inverted-secondary': '#1E1E1E',
+    bgPrimary: '#FFFFFF',
+    bgSecondary: '#F2F2F2',
+    bgInvertedPrimary: '#111015',
+    bgInvertedSecondary: '#1E1E1E',
 
-    'text-primary': '#111015',
-    'text-secondary': '#4F5658',
-    'text-tertiary': '#818085',
-    'text-inverted-primary': '#FDFDFD',
-    'text-inverted-secondary': '#EFEFEF',
+    textPrimary: '#111015',
+    textSecondary: '#4F5658',
+    textTertiary: '#818085',
+    textInvertedPrimary: '#FDFDFD',
+    textInvertedSecondary: '#EFEFEF',
 
-    'accent-primary': '#2AA1FA',
-    'accent-secondary': '#BAD4EB'
+    accentPrimary: '#2AA1FA',
+    accentSecondary: '#BAD4EB'
   }
 }

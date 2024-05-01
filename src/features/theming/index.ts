@@ -1,2 +1,2 @@
-export { Provider as ThemeProvider } from './ui/Provider'
-export { Switch as ThemeSwitcher } from './ui/Switch'
+export { Ui as ThemeSwitcher } from './Ui'
+export { getScript as getThemingScript } from './model'

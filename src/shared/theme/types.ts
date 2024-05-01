@@ -1,17 +1,17 @@
 export type Themes = 'dark' | 'light'
 
 export interface Theme {
-  'bg-primary': string
-  'bg-secondary': string
-  'bg-inverted-primary': string
-  'bg-inverted-secondary': string
+  bgPrimary: string
+  bgSecondary: string
+  bgInvertedPrimary: string
+  bgInvertedSecondary: string
 
-  'text-primary': string
-  'text-secondary': string
-  'text-tertiary': string
-  'text-inverted-primary': string
-  'text-inverted-secondary': string
+  textPrimary: string
+  textSecondary: string
+  textTertiary: string
+  textInvertedPrimary: string
+  textInvertedSecondary: string
 
-  'accent-primary': string
-  'accent-secondary': string
+  accentPrimary: string
+  accentSecondary: string
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
-import { ThemeProvider } from 'src/features/theming'
+import { getThemingScript } from 'features/theming'
 import './_assets/reset.css'
 import './_assets/globals.css'
 
@@ -22,11 +22,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
+      <head></head>
       <body className={montserrat.className}>
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        {children}
+        <script dangerouslySetInnerHTML={{ __html: getThemingScript() }} />
       </body>
     </html>
   )
