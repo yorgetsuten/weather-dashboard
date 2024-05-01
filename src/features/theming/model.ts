@@ -17,12 +17,12 @@ export function getScript() {
 
   return (script += `(${(() => {
     reflectPreference(
-      theme[getPreference(getStorageItem('theme') as Themes) as Themes]
+      theme[getPreference(getStorageItem('theme') as Themes)]
     )
     matchMedia('(prefers-color-scheme: dark)').onchange = () => {
       togglePreference((theme) => setStorageItem('theme', theme))
       reflectPreference(
-        theme[getPreference(getStorageItem('theme') as Themes) as Themes]
+        theme[(getStorageItem('theme') as Themes)]
       )
     }
   }).toString()})()`)
@@ -38,10 +38,16 @@ export function getPreference(theme: Themes | null = getStorageItem('theme')) {
       : 'light'
 }
 
+/* prettier-ignore */
 export function togglePreference(
-  setPreference = (theme: Themes) => setStorageItem('theme', theme)
+  setPreference = 
+    (theme: Themes) => setStorageItem('theme', theme)
 ) {
-  setPreference(getPreference() === 'dark' ? 'light' : 'dark')
+  setPreference(
+    getPreference() === 'dark' 
+      ? 'light' 
+      : 'dark'
+  )
 }
 
 export function reflectPreference(colors: Theme = theme[getPreference()]) {
