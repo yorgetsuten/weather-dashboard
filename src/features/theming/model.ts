@@ -1,60 +1,75 @@
-import { type Theme, type Themes, theme } from 'shared/theme'
-import { getStorageItem, setStorageItem } from 'shared/storage'
+import type { Theme, Themes } from 'shared/theme'
 
-export function getScript() {
-  const { theme } = require('shared/theme')
-  const { getStorageItem, setStorageItem } = require('shared/storage')
-
-  let script = ''
-
-  script +=
-    `const theme = ${JSON.stringify(theme)};` +
-    `${getStorageItem.toString()};` +
-    `${setStorageItem.toString()};` +
-    `${getPreference.toString()};` +
-    `${togglePreference.toString()};` +
-    `${reflectPreference.toString()};`
-
-  return (script += `(${(() => {
-    reflectPreference(
-      theme[getPreference(getStorageItem('theme') as Themes)]
-    )
-    matchMedia('(prefers-color-scheme: dark)').onchange = () => {
-      togglePreference((theme) => setStorageItem('theme', theme))
-      reflectPreference(
-        theme[(getStorageItem('theme') as Themes)]
-      )
-    }
-  }).toString()})()`)
-}
+import { theme } from 'shared/theme'
+import {
+  addStorageListener,
+  getStorageItem,
+  setStorageItem
+} from 'shared/storage'
 
 /* prettier-ignore */
-export function getPreference(theme: Themes | null = getStorageItem('theme')) {
-  if (theme)
-    return theme
+export function getPreference(storageItem: Themes | null = getStorageItem('theme')) {
+  if (storageItem)
+    return storageItem
   else
     return matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light'
 }
 
-/* prettier-ignore */
-export function togglePreference(
-  setPreference = 
-    (theme: Themes) => setStorageItem('theme', theme)
-) {
-  setPreference(
-    getPreference() === 'dark' 
+// /* prettier-ignore */
+export function togglePreference() {
+  const newPreference = 
+    getPreference() === 'dark'
       ? 'light' 
       : 'dark'
-  )
+
+  setStorageItem('theme', newPreference)
+  reflectPreference(theme[newPreference])
+  return newPreference
 }
 
-export function reflectPreference(colors: Theme = theme[getPreference()]) {
+function reflectPreference(colors = theme[getPreference()]) {
   for (let color in colors) {
     document.documentElement.style.setProperty(
       `--${color}`,
       colors[color as keyof Theme]
     )
   }
+}
+
+type GetStorageItem = typeof getStorageItem
+type SetStorageItem = typeof setStorageItem
+type AddStorageListener = typeof addStorageListener
+
+export function getScript() {
+  const script = (
+    theme: Record<Themes, Theme>,
+    getStorageItem: GetStorageItem,
+    setStorageItem: SetStorageItem,
+    addStorageListener: AddStorageListener
+  ) => {
+    reflectPreference(theme[getPreference(getStorageItem('theme'))])
+
+    matchMedia('(prefers-color-scheme: dark)').onchange = (event) => {
+      const preference = event.matches ? 'dark' : 'light'
+      if (getStorageItem('theme') !== preference) {
+        setStorageItem('theme', preference)
+      }
+    }
+
+    addStorageListener('theme', (newPreference) => {
+      reflectPreference(theme[newPreference])
+    })
+  }
+
+  return (
+    `${getStorageItem.toString()};` +
+    `${setStorageItem.toString()};` +
+    `${addStorageListener.toString()};` +
+    `${getPreference.toString()};` +
+    `${reflectPreference.toString()};` +
+    `(${script.toString()})` +
+    `(${JSON.stringify(theme)},${getStorageItem.name},${setStorageItem.name}, ${addStorageListener.name})`
+  )
 }
