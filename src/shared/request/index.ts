@@ -1,5 +1,5 @@
-import { CurrentResponse, SearchSearch } from './types'
-export type { CurrentResponse, SearchSearch }
+import { CurrentResponse, SearchResponse } from './types'
+export type { CurrentResponse, SearchResponse }
 
 const baseUrl = 'https://api.weatherapi.com/v1'
 const key = process.env.NEXT_PUBLIC_API_KEY
@@ -11,7 +11,7 @@ const endpoints = {
 /* prettier-ignore */
 type Response<T> = 
   T extends 'search'
-  ? SearchSearch[]
+  ? SearchResponse[]
   : T extends 'current'
   ? CurrentResponse
   : never

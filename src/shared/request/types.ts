@@ -1,4 +1,4 @@
-export interface SearchSearch {
+export interface SearchResponse {
   country: string
   id: number
   lat: number
