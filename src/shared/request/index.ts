@@ -1,5 +1,4 @@
-import { CurrentResponse, SearchResponse } from './types'
-export type { CurrentResponse, SearchResponse }
+import type { Response, CurrentResponse, SearchResponse } from './types'
 
 const baseUrl = 'https://api.weatherapi.com/v1'
 const key = process.env.NEXT_PUBLIC_API_KEY
@@ -7,14 +6,6 @@ const endpoints = {
   search: 'search.json',
   current: 'current.json'
 } as const
-
-/* prettier-ignore */
-type Response<T> = 
-  T extends 'search'
-  ? SearchResponse[]
-  : T extends 'current'
-  ? CurrentResponse
-  : never
 
 export async function request<T extends keyof typeof endpoints>(
   endpoint: T,
@@ -27,3 +18,5 @@ export async function request<T extends keyof typeof endpoints>(
 
   return (await fetch(url, config)).json()
 }
+
+export type { CurrentResponse, SearchResponse }

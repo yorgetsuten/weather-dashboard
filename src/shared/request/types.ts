@@ -1,3 +1,11 @@
+/* prettier-ignore */
+export type Response<T> = 
+  T extends 'search'
+  ? SearchResponse[]
+  : T extends 'current'
+  ? CurrentResponse
+  : never
+
 export interface SearchResponse {
   country: string
   id: number

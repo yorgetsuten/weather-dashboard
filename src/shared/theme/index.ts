@@ -1,5 +1,4 @@
-import { Theme, Themes } from './types'
-
+import type { Theme, Themes } from './types'
 export type { Theme, Themes }
 
 export const theme: Record<Themes, Theme> = {
