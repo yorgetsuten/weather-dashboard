@@ -1,22 +1,9 @@
 export type Keys = keyof Schema
 export type PartialSchema = Partial<Schema>
 export interface Schema {
-  // lat: number
-  // lon: number
-
-  testNum: number
-  testStr: string
-  testBool: boolean
-  testNull: null
-  testUndefined: undefined
-  testObj: {
-    num: number
-    str: string
-    bool: boolean
-    null: null
-    undefined: undefined
-  }
-  testArr: Schema['testObj'][]
+  lat: number
+  lon: number
+  focusSearch: undefined
 }
 
 export type Serializer = (value: Schema[Keys]) => string

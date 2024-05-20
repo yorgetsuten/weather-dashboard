@@ -12,7 +12,7 @@ import type {
 } from './types'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useRef, useMemo } from 'react'
+import { useMemo } from 'react'
 import { debounce } from '../lib'
 
 export type { PartialSchema as SearchParamsSchema }
@@ -23,32 +23,40 @@ function useParams(options: UseParamsOptions = {}) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const serializer: Serializer =
-    options.serializer ??
-    ((value) => {
-      return typeof value === 'string' ? value : JSON.stringify(value)
-    })
-
-  const deserializer: Deserializer =
-    options.deserializer ??
-    ((value) => {
-      if (value === 'undefined') return undefined
-
-      try {
-        return JSON.parse(value)
-      } catch {
-        return value
-      }
-    })
-
-  let modifiersQueue = useRef<ParamsModifier[]>([])
-
-  const requestParamsModification = useMemo(
+  const serializer: Serializer = useMemo(
     () =>
-      debounce(({ replace }: ParamsModifierOptions) => {
+      options.serializer ??
+      ((value) => {
+        return typeof value === 'string' ? value : JSON.stringify(value)
+      }),
+
+    [options.serializer]
+  )
+
+  const deserializer: Deserializer = useMemo(
+    () =>
+      options.deserializer ??
+      ((value) => {
+        if (value === 'undefined') return undefined
+
+        try {
+          return JSON.parse(value)
+        } catch {
+          return value
+        }
+      }),
+
+    [options.deserializer]
+  )
+
+  const queueParamsModifier = useMemo(() => {
+    let modifiersQueue: ParamsModifier[] = []
+
+    const requestParamsModification = debounce(
+      ({ replace }: ParamsModifierOptions) => {
         const current = new URLSearchParams(searchParams)
 
-        modifiersQueue.current.forEach((fn) => fn(current))
+        modifiersQueue.forEach((fn) => fn(current))
 
         if (replace) {
           router.replace(`${pathname}?${current.toString()}`)
@@ -56,98 +64,103 @@ function useParams(options: UseParamsOptions = {}) {
           router.push(`${pathname}?${current.toString()}`)
         }
 
-        modifiersQueue.current = []
-      }, 0),
-    [searchParams, pathname, router]
-  )
+        modifiersQueue = []
+      },
+      0
+    )
 
-  function queueParamsModifier(
-    modifier: ParamsModifier,
-    options: ParamsModifierOptions = { replace: true }
-  ) {
-    modifiersQueue.current = [...modifiersQueue.current, modifier]
-    requestParamsModification(options)
-  }
+    return (
+      modifier: ParamsModifier,
+      options: ParamsModifierOptions = { replace: true }
+    ) => {
+      modifiersQueue = [...modifiersQueue, modifier]
+      requestParamsModification(options)
+    }
 
-  return {
-    append<T extends Keys>(
-      key: T,
-      value: Schema[T],
-      options?: ParamsModifierOptions
-    ) {
-      queueParamsModifier((current) => {
-        current.append(key, serializer(value))
-      }, options)
-    },
+  }, [router, pathname, searchParams])
 
-    delete<T extends Keys>(
-      key: T,
-      value?: Schema[T],
-      options?: ParamsModifierOptions
-    ) {
-      queueParamsModifier((current) => {
-        current.delete(key, value && serializer(value))
-      }, options)
-    },
+  return useMemo(() => {
+    return {
+      append<T extends Keys>(
+        key: T,
+        value: Schema[T],
+        options?: ParamsModifierOptions
+      ) {
+        queueParamsModifier((current) => {
+          current.append(key, serializer(value))
+        }, options)
+      },
 
-    *entries<T extends Keys>(): IterableIterator<Entrie<T>> {
-      for (const [key, value] of searchParams.entries()) {
-        yield [key, deserializer(value)] as Entrie<T>
-      }
-    },
+      delete<T extends Keys>(
+        key: T,
+        value?: Schema[T],
+        options?: ParamsModifierOptions
+      ) {
+        queueParamsModifier((current) => {
+          current.delete(key, value && serializer(value))
+        }, options)
+      },
 
-    forEach<T extends Keys>(fn: (...[value, key]: ForEachFnArgs<T>) => void) {
-      searchParams.forEach((value, key) => {
-        fn(...([deserializer(value), key] as ForEachFnArgs<T>))
-      })
-    },
+      *entries<T extends Keys>(): IterableIterator<Entrie<T>> {
+        for (const [key, value] of searchParams.entries()) {
+          yield [key, deserializer(value)] as Entrie<T>
+        }
+      },
 
-    get<T extends Keys>(key: T) {
-      const value = searchParams.get(key)
+      forEach<T extends Keys>(fn: (...[value, key]: ForEachFnArgs<T>) => void) {
+        searchParams.forEach((value, key) => {
+          fn(...([deserializer(value), key] as ForEachFnArgs<T>))
+        })
+      },
 
-      return value ? deserializer<T>(value) : null
-    },
+      get<T extends Keys>(key: T) {
+        const value = searchParams.get(key)
 
-    getAll<T extends Keys>(key: T) {
-      const keys = searchParams.getAll(key)
+        return value ? deserializer<T>(value) : null
+      },
 
-      return keys.length > 0
-        ? keys.map((value) => deserializer<T>(value))
-        : null
-    },
+      getAll<T extends Keys>(key: T) {
+        const keys = searchParams.getAll(key)
 
-    has: (key: Keys) => searchParams.has(key),
+        return keys.length > 0
+          ? keys.map((value) => deserializer<T>(value))
+          : null
+      },
 
-    *keys(): IterableIterator<Keys> {
-      for (const key of searchParams.keys()) {
-        yield key as Keys
-      }
-    },
+      has: (key: Keys) => searchParams.has(key),
 
-    set<T extends Keys>(
-      key: T,
-      value: Schema[T],
-      options?: ParamsModifierOptions
-    ) {
-      queueParamsModifier((current) => {
-        current.set(key, serializer(value))
-      }, options)
-    },
+      *keys(): IterableIterator<Keys> {
+        for (const key of searchParams.keys()) {
+          yield key as Keys
+        }
+      },
 
-    size: searchParams.size,
+      set<T extends Keys>(
+        key: T,
+        value: Schema[T],
+        options?: ParamsModifierOptions
+      ) {
+        queueParamsModifier((current) => {
+          current.set(key, serializer(value))
+        }, options)
+      },
 
-    sort(options?: ParamsModifierOptions) {
-      queueParamsModifier((current) => {
-        current.sort()
-      }, options)
-    },
+      size: searchParams.size,
 
-    toString: () => searchParams.toString(),
+      sort(options?: ParamsModifierOptions) {
+        queueParamsModifier((current) => {
+          current.sort()
+        }, options)
+      },
 
-    *values(): IterableIterator<Schema[Keys]> {
-      for (const value of searchParams.values()) {
-        yield deserializer(value)!
+      toString: () => searchParams.toString(),
+
+      *values(): IterableIterator<Schema[Keys]> {
+        for (const value of searchParams.values()) {
+          yield deserializer(value)!
+        }
       }
     }
-  }
+
+  }, [deserializer, queueParamsModifier, searchParams, serializer])
 }
