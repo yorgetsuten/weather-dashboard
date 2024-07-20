@@ -17,7 +17,7 @@ export function getPreference(storageItem: Themes | null = getStorageItem('theme
       : 'light'
 }
 
-// /* prettier-ignore */
+/* prettier-ignore */
 export function togglePreference() {
   const newPreference = 
     getPreference() === 'dark'

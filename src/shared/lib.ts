@@ -4,10 +4,10 @@ export function debounce<F extends (...args: any[]) => void>(
 ) {
   let timeout: ReturnType<typeof setTimeout> | undefined = undefined
 
-  return (...args: Parameters<F>) => {
+  return function (this: any, ...args: Parameters<F>) {
     clearTimeout(timeout)
     timeout = setTimeout(() => {
-      fn(...args)
+      fn.apply(this, args)
     }, ms)
   }
 }
