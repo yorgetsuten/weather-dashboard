@@ -1,9 +1,8 @@
 'use client'
 
-import type { ChangeEvent } from 'react'
 import type { SearchResponse } from 'shared/request'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AiOutlineLoading } from 'react-icons/ai'
 import { GoSearch } from 'react-icons/go'
 import { clsx } from 'clsx'
@@ -11,16 +10,31 @@ import { clsx } from 'clsx'
 import { debounce } from 'shared/lib'
 import { request } from 'shared/request'
 import { useSearchParams } from 'shared/searchParams'
-import { useSearchRefContext } from '../../model'
+import { useLocationContext } from '../../model'
+import { getLocationName } from '../../lib'
 import { Item } from './Item'
 
 export function Index() {
-  const searchRef = useSearchRefContext()
+  const { searchRef, setLocationName } = useLocationContext()
 
+  const [, searchParams] = useSearchParams()
   const [isTyping, setIsTyping] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [, searchParams] = useSearchParams()
   const [searchItems, setSearchItems] = useState<SearchResponse[]>([])
+
+  useEffect(() => {
+    const listener = ({ target }: MouseEvent) => {
+      if (target !== searchRef.current) {
+        searchRef.current!.value = ''
+        setIsTyping(false)
+        setSearchItems([])
+      }
+    }
+
+    addEventListener('click', listener)
+    return () => removeEventListener('click', listener)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const { current: search } = useRef(
     debounce((value: string) => {
@@ -31,7 +45,9 @@ export function Index() {
     })
   )
 
-  function onChange({ target: { value } }: ChangeEvent<HTMLInputElement>) {
+  function onChange({
+    target: { value }
+  }: React.ChangeEvent<HTMLInputElement>) {
     if (value) search(value)
 
     if (isLoading === false) setIsLoading(true)
@@ -43,14 +59,6 @@ export function Index() {
       setIsLoading(false)
       setSearchItems([])
     }
-  }
-
-  function onClick(lat: number, lon: number) {
-    searchParams.set('lat', lat)
-    searchParams.set('lon', lon)
-    searchRef.current!.value = ''
-    setIsTyping(false)
-    setSearchItems([])
   }
 
   return (
@@ -96,11 +104,14 @@ export function Index() {
         {searchItems.map((item) => (
           <Item
             key={item.id}
-            name={item.name}
-            region={item.region}
-            country={item.country}
+            locationName={getLocationName(item)}
             onClick={() => {
-              onClick(item.lat, item.lon)
+              searchParams.set('lat', item.lat)
+              searchParams.set('lon', item.lon)
+              searchRef.current!.value = ''
+              setIsTyping(false)
+              setSearchItems([])
+              setLocationName(getLocationName(item))
             }}
           />
         ))}

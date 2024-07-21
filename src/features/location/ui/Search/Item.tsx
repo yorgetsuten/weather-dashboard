@@ -3,14 +3,10 @@ import { SlLocationPin } from 'react-icons/sl'
 
 export function Item({
   onClick,
-  name,
-  region,
-  country
+  locationName
 }: {
   onClick: () => void
-  name: string
-  region: string
-  country: string
+  locationName: string
 }) {
   return (
     <div
@@ -25,7 +21,7 @@ export function Item({
         className='min-w-[20px] fill-textSecondary mr-[11px]'
       />
       <p className='text-ellipsis overflow-hidden text-nowrap'>
-        {name}, {region}, {country}
+        {locationName}
       </p>
     </div>
   )

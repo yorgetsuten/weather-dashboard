@@ -1,6 +1,7 @@
 import type { Theme, Themes } from 'shared/theme'
 
 import { theme } from 'shared/theme'
+
 import {
   addStorageListener,
   getStorageItem,

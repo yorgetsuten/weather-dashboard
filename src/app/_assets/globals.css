@@ -3,5 +3,7 @@
 @tailwind utilities;
 
 body {
-  transition: 600ms;
+  width: 100dvw; 
+  height: 100dvh;
+  background-color: var(--bgPrimary);
 }

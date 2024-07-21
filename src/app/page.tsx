@@ -1,10 +1,6 @@
 import type { SearchParamsSchema } from 'shared/searchParams'
 
-import {
-  CurrentLocation,
-  SearchLocation,
-  SearchRefProvider
-} from 'features/location'
+import { Header } from 'widgets/Header'
 
 export default function Home({
   searchParams
@@ -12,11 +8,8 @@ export default function Home({
   searchParams: SearchParamsSchema
 }) {
   return (
-    <main className='bg-bgPrimary flex justify-evenly items-center text-textPrimary w-[100vw] h-[100vh]'>
-      <SearchRefProvider>
-        <CurrentLocation searchParams={searchParams} />
-        <SearchLocation />
-      </SearchRefProvider>
-    </main>
+    <>
+      <Header searchParams={searchParams} />
+    </>
   )
 }

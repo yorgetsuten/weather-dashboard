@@ -20,6 +20,7 @@
     ],
     "paths": {
       "app/*": ["./src/app/*"],
+      "widgets/*": ["./src/widgets/*"],
       "features/*": ["./src/features/*"],
       "shared/*": ["./src/shared/*"]
     }

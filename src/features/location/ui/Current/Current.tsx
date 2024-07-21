@@ -1,12 +1,13 @@
 'use client'
 
-import type { CurrentResponse } from 'shared/request'
+import { type CurrentResponse } from 'shared/request'
 
 import { useState, useEffect } from 'react'
 import { SlLocationPin } from 'react-icons/sl'
 
 import { useSearchParams } from 'shared/searchParams'
-import { useSearchRefContext } from '../../model'
+import { useLocationContext } from '../../model'
+import { getLocationName } from '../../lib'
 import { Tooltip } from './Tooltip'
 
 type Props =
@@ -20,7 +21,7 @@ type Props =
     }
 
 export function Current({ location, locationBy }: Props) {
-  const searchRef = useSearchRefContext()
+  const { searchRef, locationName } = useLocationContext()
   const [hideTooltip, setHideTooltip] = useState<boolean>(true)
   const [searchParamsState, searchParams] = useSearchParams()
 
@@ -45,6 +46,17 @@ export function Current({ location, locationBy }: Props) {
     }
   }, [location, locationBy, searchParams])
 
+  useEffect(() => {
+    if (
+      searchParamsState.lat &&
+      searchParamsState.lon &&
+      hideTooltip === false
+    ) {
+      setHideTooltip(true)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParamsState.lat, searchParamsState.lon])
+
   function onConfirm() {
     setHideTooltip(true)
 
@@ -65,9 +77,8 @@ export function Current({ location, locationBy }: Props) {
     <div className='relative flex items-center gap-[6px]'>
       <SlLocationPin size='25' className='fill-textSecondary' />
       <div className='text-textPrimary font-montserrat font-normal text-[18px]'>
-        {location
-          ? `${location.name}, ${location.country}`
-          : 'London, United Kingdom'}
+        {locationName ??
+          (location ? getLocationName(location) : 'London, United Kingdom')}
       </div>
       <Tooltip hidden={hideTooltip} onConfirm={onConfirm} onDecline={onDecline}>
         Is that your current location?

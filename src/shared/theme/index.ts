@@ -1,5 +1,4 @@
 import type { Theme, Themes } from './types'
-export type { Theme, Themes }
 
 export const theme: Record<Themes, Theme> = {
   dark: {
@@ -33,3 +32,5 @@ export const theme: Record<Themes, Theme> = {
     accentSecondary: '#BAD4EB'
   }
 }
+
+export type { Theme, Themes }

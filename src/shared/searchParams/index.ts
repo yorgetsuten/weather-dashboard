@@ -1,3 +1,5 @@
+import type { Themes } from '../theme'
+
 import type {
   SerializeSchema,
   UseMutableParamsOptions
@@ -10,6 +12,7 @@ export type SearchParamsSchema = SerializeSchema<MutableParamsSchema>
 export type MutableParamsSchema = {
   lat: number
   lon: number
+  theme: Themes
 }
 
 export const useSearchParams = (
